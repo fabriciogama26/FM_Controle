@@ -1,9 +1,13 @@
-import Tabela from "./Tabela";
+import './App.css'; // Importando o CSS específico do App
+import Cabecario from './Cabecario'; // Seu componente Cabecario
+import Tabela from './Tabela'; // Seu componente Tabela
 
 function App() {
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="app-container">
+      <Cabecario />
       <Tabela />
+      <button className="app-button">Clique Aqui</button>
     </div>
   );
 }

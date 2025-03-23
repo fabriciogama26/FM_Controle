@@ -1,8 +1,23 @@
-# React + Vite
+# Projeto de Tabela com Filtros e Funcionalidades de Pesquisa
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este projeto implementa uma tabela com funcionalidades de filtro, incluindo um filtro de busca e um dropdown para selecionar intervalos de datas. A interface foi projetada para ser simples e responsiva, permitindo que o usuário visualize e filtre dados com facilidade.
 
-Currently, two official plugins are available:
+## Funcionalidades
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Tabela com dados**: Exibe várias colunas, como "Contrato", "Projeto", "FM", "Data Execução", "Valor", etc.
+- **Filtro de busca**: Permite ao usuário pesquisar por palavras-chave em qualquer coluna da tabela.
+- **Dropdown de data**: Oferece opções para filtrar dados com base em diferentes intervalos de tempo:
+  - Último dia
+  - Últimos 7 dias
+  - Últimos 30 dias
+  - Último mês
+  - Último ano
+- **Personalização de botão de filtro**: O botão de filtro possui um estilo personalizado, com um fundo azul e texto branco, além de um comportamento de hover.
+
+## Como Usar
+
+1. **Clonar o Repositório**:
+   Clone este repositório para sua máquina local utilizando o comando:
+   
+   ```bash
+   git clone <url-do-repositório>
