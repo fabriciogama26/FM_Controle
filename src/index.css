@@ -42,11 +42,11 @@ a:hover {
 
 /* Estilos para o corpo da página */
 body {
-  margin: 0;             /* Remove margens padrão */
+  margin: 2px;             /* Remove margens padrão */
   display: flex;         /* Usa flexbox para centralizar o conteúdo */
   place-items: center;   /* Centraliza os itens */
   min-width: 320px;      /* Garante uma largura mínima para não quebrar em telas pequenas */
-  min-height: 100vh;     /* Garante que o body ocupe a tela toda */
+  min-height: 0vh;     /* Garante que o body ocupe a tela toda */
 }
 
 /* Outras definições globais */

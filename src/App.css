@@ -1,8 +1,16 @@
 /* App.css */
 
 /* =======================================
+   Estilos para App
+   ======================================= */
+   .app-container {
+    padding-top: 20px; /* Distância entre o topo da página e o cabeçalho */
+  }
+
+/* =======================================
    Estilos para Tabela.jsx
    ======================================= */
+   
 
 /* Estilos específicos para o componente Tabela */
 .tabela-component {
@@ -14,6 +22,7 @@
 
 /* Estilo para o contêiner da tabela */
 .tabela-container {
+  margin-top: 20px; /* Garantindo que a tabela tenha distância do cabeçalho */
   padding: 20px;
 }
 
@@ -107,9 +116,13 @@
 
 /* Ícones */
 .icon-search, .icon-dropdown {
-  width: 16px; /* Largura do ícone */
-  height: 16px; /* Altura do ícone */
-  fill: #ffffff; /* Cor do ícone */
+  width: 16px; /* Tamanho do ícone */
+  height: 16px; /* Tamanho do ícone */
+  fill: #fffcfc; /* Cor do ícone */
+  position: absolute; /* Posicionamento absoluto dentro do campo */
+  left: 10px; /* Alinha o ícone à esquerda */
+  top: 50%; /* Centraliza verticalmente */
+  transform: translateY(-50%); /* Ajusta para o centro exato */
 }
 
 /* Controlando a largura dos ícones */
@@ -130,6 +143,7 @@
 
 /* Estilos específicos para o componente Cabecario */
 .cabecario-component {
+  background-color: #ffffff;
   font-family: 'Arial', sans-serif;
   color: #0a0909;
   padding: 20px;
@@ -138,9 +152,10 @@
 /* Cabeçalho do Cabecario */
 .cabecario-header {
   display: flex;
-  align-items: center;
+  align-items: top;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 200px;
+  margin-top: 20px; /* Adiciona um espaço no topo do cabeçalho */
 }
 
 /* Logo à esquerda */
@@ -208,7 +223,7 @@
 
 /* Ícone do botão de Excel */
 .excel-icon {
-  width: 24px; /* Largura do ícone */
-  height: 24px; /* Altura do ícone */
-  margin-right: 8px; /* Espaçamento entre o ícone e o texto */
+  width: 30px; /* Largura do ícone */
+  height: 30px; /* Altura do ícone */
+  margin-right: 2px; /* Espaçamento entre o ícone e o texto */
 }

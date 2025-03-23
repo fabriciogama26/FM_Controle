@@ -1,69 +1,73 @@
 import { useState } from 'react';
+import PropTypes from "prop-types";
 
-const Tabela = () => {
+const Tabela = ({ data }) => {
   const [selectedFilter, setSelectedFilter] = useState('Last 7 days');
-  
-  const handleFilterChange = (e) => {
-    setSelectedFilter(e.target.value);
-  };
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filtragem dos dados com base na pesquisa e no filtro selecionado
+  const filteredData = data.filter((item) => {
+    const searchMatch =
+      item.contrato?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.projeto?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.fm?.toString().includes(searchQuery);
+
+    const filterMatch = (filter) => {
+      const currentDate = new Date();
+      const dateExecuted = new Date(item.dataExecucao);
+      const diffTime = currentDate - dateExecuted;
+
+      if (filter === 'Last 7 days') return diffTime <= 7 * 24 * 60 * 60 * 1000;
+      if (filter === 'Last 30 days') return diffTime <= 30 * 24 * 60 * 60 * 1000;
+      if (filter === 'Last month') return currentDate.getMonth() === dateExecuted.getMonth();
+      if (filter === 'Last year') return currentDate.getFullYear() === dateExecuted.getFullYear();
+      if (filter === 'Last day') return diffTime <= 1 * 24 * 60 * 60 * 1000;
+
+      return true;
+    };
+
+    return searchMatch && filterMatch(selectedFilter);
+  });
 
   return (
-    <div className="tabela-component">
-      
-      {/* Início da Tabela Container */}
-      <div className="tabela-container relative overflow-x-auto shadow-md sm:rounded-lg">
+        <div className="tabela-component">
+          <div className="tabela-container relative overflow-auto shadow-md sm:rounded-lg h-[400px]">
+            
+            {/* Barra de Pesquisa e Filtros */}
+            <div className="tabela-filter-container flex flex-wrap justify-between items-center pb-4">
+              {/* Campo de Busca */}
+              <div className="relative">
+                <input 
+                  type="text" 
+                  className="tabela-search-input block p-2 pl-10 text-sm border rounded-md" 
+                  placeholder="Buscar..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                {/* Ícone de Pesquisa */}
+                <svg className="icon-search" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd"></path>
+                </svg>
+              </div>
         
-        {/* Início do Filtro (Busca e Dropdown) */}
-        <div className="tabela-filter-container flex flex-col sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
-          
-          {/* Filtro de Busca */}
-          <label htmlFor="table-search" className="sr-only">Search</label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <svg className="icon-search" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd"></path>
-              </svg>
-            </div>
-            <input type="text" id="table-search" className="tabela-search-input block p-2 pl-10 text-sm" placeholder="Buscar..."/>
-          </div>
 
-          {/* Filtro Dropdown (Seleção de Períodos) */}
-          <div className="tabela-filter-dropdown relative">
-            <button id="dropdownRadioButton" className="dropdown-button inline-flex items-center text-sm font-medium">
-              {selectedFilter}
-              <svg className="icon-dropdown" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
-              </svg>
-            </button>
-            <div id="dropdownRadio" className="dropdown-menu z-10 hidden w-48">
-              <ul className="p-3 space-y-1 text-sm">
-                {['Last day', 'Last 7 days', 'Last 30 days', 'Last month', 'Last year'].map((filter) => (
-                  <li key={filter}>
-                    <div className="filter-item flex items-center p-2 rounded-sm">
-                      <input 
-                        id={`filter-radio-${filter}`}
-                        type="radio"
-                        value={filter}
-                        name="filter-radio"
-                        className="filter-radio w-4 h-4"
-                        checked={selectedFilter === filter}
-                        onChange={handleFilterChange}
-                      />
-                      <label htmlFor={`filter-radio-${filter}`} className="filter-label text-sm">
-                        {filter}
-                      </label>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+          {/* Dropdown de Filtros */}
+          <select
+            className="dropdown-button p-2 border rounded-md"
+            value={selectedFilter}
+            onChange={(e) => setSelectedFilter(e.target.value)}
+          >
+            <option value="Last day">Último dia</option>
+            <option value="Last 7 days">Últimos 7 dias</option>
+            <option value="Last 30 days">Últimos 30 dias</option>
+            <option value="Last month">Último mês</option>
+            <option value="Last year">Último ano</option>
+          </select>
         </div>
-        {/* Fim do Filtro */}
 
-        {/* Início da Tabela de Dados */}
-        <table className="tabela-table w-full text-sm text-left">
-          <thead className="tabela-header text-xs uppercase">
+        {/* Tabela de Dados */}
+        <table className="tabela-table w-full text-sm text-left border-collapse">
+          <thead className="tabela-header text-xs uppercase bg-gray-200 sticky top-0 z-10">
             <tr>
               <th className="px-6 py-3">Contrato</th>
               <th className="px-6 py-3">Projeto</th>
@@ -77,25 +81,42 @@ const Tabela = () => {
             </tr>
           </thead>
           <tbody className="tabela-body">
-            <tr>
-              <td className="px-6 py-4">Example Contract</td>
-              <td className="px-6 py-4">Example Project</td>
-              <td className="px-6 py-4">12345</td>
-              <td className="px-6 py-4">01/01/2025</td>
-              <td className="px-6 py-4">$1000</td>
-              <td className="px-6 py-4">No</td>
-              <td className="px-6 py-4">02/01/2025</td>
-              <td className="px-6 py-4">03/01/2025</td>
-              <td className="px-6 py-4">Pending</td>
-            </tr>
+            {filteredData.map((row, rowIndex) => (
+              <tr key={rowIndex} className="border-b">
+                <td className="px-6 py-4">{row.contrato}</td>
+                <td className="px-6 py-4">{row.projeto}</td>
+                <td className="px-6 py-4">{row.fm}</td>
+                <td className="px-6 py-4">{row.dataExecucao}</td>
+                <td className="px-6 py-4">{row.valor}</td>
+                <td className="px-6 py-4">{row.pendencia}</td>
+                <td className="px-6 py-4">{row.dataEnvio}</td>
+                <td className="px-6 py-4">{row.dataCorrecao}</td>
+                <td className="px-6 py-4">{row.status}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
-        {/* Fim da Tabela de Dados */}
 
       </div>
-      {/* Fim da Tabela Container */}
     </div>
   );
+};
+
+// Validação das props
+Tabela.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      contrato: PropTypes.string,
+      projeto: PropTypes.string,
+      fm: PropTypes.number,
+      dataExecucao: PropTypes.string,
+      valor: PropTypes.number,
+      pendencia: PropTypes.string,
+      dataEnvio: PropTypes.string,
+      dataCorrecao: PropTypes.string,
+      status: PropTypes.string,
+    })
+  ).isRequired,
 };
 
 export default Tabela;
