@@ -17,7 +17,7 @@
   font-family: 'Arial', sans-serif;
   font-size: 1rem;
   background-color: #ffffff; /* Cor de fundo da página */
-  color: #080808; /* Cor do texto */
+  color: #000000; /* Cor do texto */
 }
 
 /* Estilo para o contêiner da tabela */
@@ -31,6 +31,7 @@
   padding-bottom: 16px;
 }
 
+/* Input de busca */
 .tabela-search-input {
   background-color: #505050;
   border: 1px solid #ffffff;
@@ -41,6 +42,24 @@
 /* Filtro Dropdown */
 .tabela-filter-dropdown {
   position: relative;
+}
+
+/* Contêiner da tabela */
+.table-container {
+  margin-top: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 15px;
+  background: rgb(160, 160, 161);
+  color: #000000;
+}
+
+/* Adicione ao seu Tabela.css */
+.tabela-component .empty-message {
+  padding: 20px;
+  text-align: center;
+  color: #000000;
+  font-style: italic;
 }
 
 /* Botões */
@@ -147,6 +166,7 @@
   font-family: 'Arial', sans-serif;
   color: #0a0909;
   padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
 }
 
 /* Cabeçalho do Cabecario */

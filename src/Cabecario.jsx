@@ -1,12 +1,11 @@
+import PropTypes from 'prop-types';
 import logo from './assets/logo.png'; 
 import light from './assets/light.jpg';
 import excelIcon from './assets/excel_icon.webp';
-import PropTypes from "prop-types";
 
-const Cabecario = ({ onFileUpload }) => {
+const Cabecario = ({ onUploadClick }) => { // Nova prop
   return (
     <div className="cabecario-component">
-      {/* Linha com Logo à esquerda, Texto centralizado e Logo à direita */}
       <div className="cabecario-header">
         <div className="cabecario-logo-left">
           <img src={logo} alt="Logo Esquerda" className="logo" />
@@ -21,23 +20,22 @@ const Cabecario = ({ onFileUpload }) => {
         </div>
       </div>
 
-      {/* Botão de Importação de Excel */}
       <div className="cabecario-footer">
         <p>Controle de Medição</p>
-        <label className="excel-button">
-          <input type="file" accept=".xlsx, .xls" hidden onChange={onFileUpload} />
+        <button 
+          className="excel-button"
+          onClick={onUploadClick} // Aciona a função passada como prop
+        >
           <img src={excelIcon} alt="Ícone de Excel" className="excel-icon" />
           Importar FM
-        </label>
+        </button>
       </div>
     </div>
   );
 };
 
-// Validação das props
 Cabecario.propTypes = {
-  onFileUpload: PropTypes.func.isRequired, // Confirma que é uma função obrigatória
+  onUploadClick: PropTypes.func.isRequired // Validação da nova prop
 };
-
 
 export default Cabecario;
