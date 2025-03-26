@@ -193,8 +193,4 @@ Tabela.propTypes = {
   ),
 };
 
-Tabela.defaultProps = {
-  initialData: [],
-};
-
 export default Tabela;
