@@ -3,46 +3,49 @@ import { forwardRef } from 'react';
 import PropTypes from 'prop-types';
 
 const FileUpload = forwardRef(({ onDataExtracted, onError, setLoading }, ref) => {
-  // Função melhorada para validar e formatar datas
-  const formatExcelDate = (excelDate) => {
+  
+  const formatExcelDate  = (excelDate) => {
     if (!excelDate) return '';
     
-    // Se já for uma data no formato YYYY-MM-DD
-    if (typeof excelDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(excelDate)) {
-      return excelDate;
+    // Se já estiver no formato DD/MM/YYYY
+    if (typeof excelDate === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(excelDate)) {
+      const [day, month, year] = excelDate.split('/');
+      return `${year}-${month}-${day}`;
     }
     
     // Se for número (formato Excel)
     if (typeof excelDate === 'number') {
       try {
-        const date = new Date((excelDate - (25567 + 2)) * 86400 * 1000);
-        const isoDate = date.toISOString().split('T')[0];
-        return /^\d{4}-\d{2}-\d{2}$/.test(isoDate) ? isoDate : '';
+        const date = new Date((excelDate - (25567 + 1)) * 86400 * 1000);
+        date.setHours(12, 0, 0, 0); // Fixa no meio do dia para evitar problemas de fuso horário
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${year}-${month}-${day}`;
       } catch {
         return '';
       }
     }
     
-    // Se for string com formato DD/MM/YYYY
-    if (typeof excelDate === 'string') {
-      // Remove textos indesejados como "Matrícula Light:"
-      if (!/^\d{2}\/\d{2}\/\d{4}$/.test(excelDate.trim())) return '';
-      
-      const parts = excelDate.split('/');
-      if (parts.length === 3) {
-        const day = parts[0].padStart(2, '0');
-        const month = parts[1].padStart(2, '0');
-        const year = parts[2];
-        return `${year}-${month}-${day}`;
-      }
-    }
+    // // Se for string com formato DD/MM/YYYY (já está no formato brasileiro)
+    // if (typeof excelDate === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(excelDate)) {
+    //   return excelDate;
+    // }
     
     return '';
   };
 
-  const isValidDate = (dateString) => {
-    return dateString && /^\d{4}-\d{2}-\d{2}$/.test(dateString);
-  };
+  // Função para formatar valor como monetário (R$)
+  // const formatToBrazilianCurrency = (value) => {
+  //   return new Intl.NumberFormat('pt-BR', {
+  //     style: 'currency',
+  //     currency: 'BRL'
+  //   }).format(value || 0);
+  // };
+
+  // const isValidBrazilianDate = (dateStr) => {
+  //   return dateStr && /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr);
+  // };
 
   const calcularPendencia = (valor) => {
     if (valor > 10000) return 'Análise gerencial necessária';
@@ -63,7 +66,6 @@ const FileUpload = forwardRef(({ onDataExtracted, onError, setLoading }, ref) =>
         const fileData = new Uint8Array(event.target.result);
         const workbook = XLSX.read(fileData, { type: 'array' });
 
-        // Busca por aba que contenha "Folha" ou "Medição"
         const sheetName = workbook.SheetNames.find(name => 
           name.toLowerCase().includes('folha') || 
           name.toLowerCase().includes('medição')
@@ -75,12 +77,11 @@ const FileUpload = forwardRef(({ onDataExtracted, onError, setLoading }, ref) =>
         console.log("[DEBUG] Dados brutos da planilha:", rawData);
 
         const extractedData = rawData
-          .slice(0, 100) // Limita às primeiras 100 linhas
-          .filter((row, index) => index > 0 && Array.isArray(row)) // Ignora cabeçalho
+          .slice(0, 100)
+          .filter((row, index) => index > 0 && Array.isArray(row))
           .map(row => {
-            const limitedRow = row.slice(0, 16); // Colunas A-P
+            const limitedRow = row.slice(0, 16);
             
-            // Função auxiliar para encontrar valores após palavras-chave
             const findValue = (keywords) => {
               for (let i = 0; i < limitedRow.length; i++) {
                 const cell = limitedRow[i];
@@ -88,7 +89,6 @@ const FileUpload = forwardRef(({ onDataExtracted, onError, setLoading }, ref) =>
                 
                 const cellStr = cell.toString().toLowerCase();
                 if (keywords.some(kw => cellStr.includes(kw.toLowerCase()))) {
-                  // Encontrou a palavra-chave, procura o próximo valor válido
                   for (let j = i + 1; j < limitedRow.length; j++) {
                     const nextVal = limitedRow[j];
                     if (nextVal !== null && nextVal !== undefined && nextVal !== '') {
@@ -108,35 +108,35 @@ const FileUpload = forwardRef(({ onDataExtracted, onError, setLoading }, ref) =>
             const projetoRaw = findValue(['projeto:', 'projeto']);
             const projeto = projetoRaw?.toString().trim() || '';
 
-            // Extrair Valor
-            const valorRaw = findValue(['total', 'valor total']);
+            // Extrair Valor e formatar como monetário
+            const valorRaw = findValue(['Total:', 'total']);
             const valor = valorRaw ? parseFloat(valorRaw.toString().replace(',', '.')) || 0 : 0;
+            // const valor = formatToBrazilianCurrency(valorNum);
 
-            // Extrair Data com validação
+            // Extrair Data e formatar no padrão brasileiro
             const dataRaw = findValue(['data:', 'data']);
-            let dataExecucao = '';
-            if (dataRaw) {
-              const formatted = formatExcelDate(dataRaw);
-              dataExecucao = isValidDate(formatted) ? formatted : '';
-            }
+            const dataExecucao = dataRaw ? formatExcelDate(dataRaw) : '';
+            // let dataExecucao = '';
+            // if (dataRaw) {
+            //   const formatted = formatToBrazilianDate(dataRaw);
+            //   dataExecucao = isValidBrazilianDate(formatted) ? formatted : '';
+            // }
 
             return {
-              projeto,
-              fm,
-              dataExecucao,
-              valor,
+              projeto: projeto,
+              fm: fm,
+              dataExecucao: dataExecucao,
+              valor: valor,
               contrato: projeto.match(/(\d{4,})/)?.[0] || '',
               pendencia: calcularPendencia(valor),
-              dataEnvio: '',
+              dataEnvio: formatExcelDate(new Date()), // Data atual formatada
               dataCorrecao: '',
               status: valor > 10000 ? 'Prioridade' : 'Pendente'
             };
           })
           .filter(item => {
-            // Filtra itens com pelo menos um campo válido
-            return item.fm > 0 || item.projeto || item.valor > 0 || isValidDate(item.dataExecucao);
+            return item.fm > 0 || item.projeto || item.valor > 0 || item.dataExecucao;
           });
-
         console.log("[DEBUG] Dados processados para o DB:", extractedData);
         onDataExtracted(extractedData);
       } catch (error) {
@@ -144,6 +144,8 @@ const FileUpload = forwardRef(({ onDataExtracted, onError, setLoading }, ref) =>
         console.error('Erro detalhado:', error);
       } finally {
         setLoading(false);
+        // Limpa o valor do input para permitir nova seleção
+        e.target.value = '';
       }
     };
     reader.readAsArrayBuffer(file);
